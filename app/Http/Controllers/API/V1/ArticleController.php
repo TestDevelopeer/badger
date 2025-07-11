@@ -26,15 +26,15 @@ class ArticleController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $this->validate($request, [
-            'title' => ['required', 'max:20', 'unique:articles'],
+        $validated = $request->validate([
+            'title' => ['required', 'max:20', 'unique:articles,title'],
             'body' => ['required', 'min:5'],
         ]);
 
         $article = Article::create([
-            'title' => $request->input('title'),
-            'slug' => Str::slug($request->input('title')),
-            'body' => $request->input('body'),
+            'title' => $validated['title'],
+            'slug' => Str::slug($validated['title']),
+            'body' => $validated['body'],
             'author_id' => auth()->id() ?? 1
         ]);
 
@@ -58,15 +58,15 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article): JsonResponse
     {
-        $this->validate($request, [
-            'title' => ['required', 'max:20', Rule::unique('articles')->ignore($article->title)],
+        $validated = $request->validate([
+            'title' => ['sometimes', 'max:20', Rule::unique('articles')->ignore($article->title, 'title')],
             'body' => ['required', 'min:5'],
         ]);
 
         $article->update([
-            'title' => $request->input('title'),
-            'slug' => Str::slug($request->input('title')),
-            'body' => $request->input('body'),
+            'title' => $validated['title'],
+            'slug' => Str::slug($validated['title']),
+            'body' => $validated['body'],
             'author_id' => auth()->id() ?? 1
         ]);
 
@@ -78,10 +78,10 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): JsonResponse
     {
         $article->delete();
 
-        return response()->setStatusCode(204);
+        return response()->json(null, 204);
     }
 }
