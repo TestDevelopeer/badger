@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         'link' => 'Example.com/link',
                         'status_code' => (string) $e->getStatusCode(),
                     ]
-                ]);
+                ], 404);
             }
             return $e;
         });
