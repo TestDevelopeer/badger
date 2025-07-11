@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([
     'prefix' => 'v1',
-    //'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum'
 ], function () {
     // Articles
     Route::apiResource('/articles', ArticleController::class);
