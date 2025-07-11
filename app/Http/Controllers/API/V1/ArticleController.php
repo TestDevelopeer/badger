@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ArticleStoreRequest;
+use App\Http\Requests\ArticleUpdateRequest;
 use App\Http\Resources\V1\ArticleCollection;
 use App\Http\Resources\V1\ArticleResource;
 use App\Models\Article;
@@ -24,12 +26,9 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(ArticleStoreRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'max:20', 'unique:articles,title'],
-            'body' => ['required', 'min:5'],
-        ]);
+        $validated = $request->validated();
 
         $article = Article::create([
             'title' => $validated['title'],
@@ -56,12 +55,9 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Article $article): JsonResponse
+    public function update(ArticleUpdateRequest $request, Article $article): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => ['sometimes', 'max:20', Rule::unique('articles')->ignore($article->title, 'title')],
-            'body' => ['required', 'min:5'],
-        ]);
+        $validated = $request->validated();
 
         $article->update([
             'title' => $validated['title'],
